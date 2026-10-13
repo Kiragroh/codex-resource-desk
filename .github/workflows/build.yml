@@ -1,0 +1,19 @@
+name: Windows checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Safety fixtures
+        run: dotnet run --project tests/ResourceDesk.Tests -c Release
+      - name: Build native app
+        run: dotnet build src/ResourceDesk.App/ResourceDesk.App.csproj -c Release
