@@ -4,9 +4,9 @@
 
 A small, native Windows companion for seeing where Codex memory goes and switching configured local MCP integrations on or off.
 
-**0.1.1 — early preview.** Independent software; not affiliated with OpenAI. No telemetry, background service, browser server, administrator prompt or automatic startup entry.
+**0.1.2 — early preview.** Independent software; not affiliated with OpenAI. No telemetry, background service, browser server, administrator prompt or automatic startup entry.
 
-[Download the Windows x64 portable preview](https://github.com/Kiragroh/codex-resource-desk/releases/tag/v0.1.1) · [Report an issue](https://github.com/Kiragroh/codex-resource-desk/issues) · [MIT license](LICENSE)
+[Download the Windows x64 portable preview](https://github.com/Kiragroh/codex-resource-desk/releases/tag/v0.1.2) · [Report an issue](https://github.com/Kiragroh/codex-resource-desk/issues) · [MIT license](LICENSE)
 
 ![Resource Desk showing physical memory, Codex private resident RAM, process counts and disabled Unity and Hostinger integrations](launch/02-app-screenshot.png)
 
@@ -14,7 +14,15 @@ A small, native Windows companion for seeing where Codex memory goes and switchi
 
 ## Run the portable app
 
-Extract the entire Windows x64 ZIP into a writable local folder, then open **ResourceDesk.exe**. Keep the bundled files together. The .NET runtime is included; no installation is needed. Close the window to stop monitoring.
+Extract the entire Windows x64 ZIP into a folder, then open **ResourceDesk.exe**. Keep the bundled files together. The .NET runtime is included; no installation is needed. Closing the window hides it in the Windows notification area. Monitoring continues until you choose **Exit** from the tray menu.
+
+Double-click the tray icon or choose **Open Resource Desk** to restore the window. The menu also offers **Refresh now** and **Pause/Resume monitoring**; hover to see the current Codex memory/process summary and live/paused/stale state. Windows may place the icon under its hidden-icons arrow. Reopening the app activates the existing instance for your Windows user/session. If it is already running, select a different config in Settings.
+
+Start with `--tray` to keep the window hidden initially, or `--no-tray` for exit-on-close behavior. Neither option adds Windows autostart. Monitoring is entirely local and does not call an AI model.
+
+## Automatic discovery
+
+Every five seconds, Resource Desk rereads both the selected `config.toml` and the process inventory, even while its window is hidden. Newly added global MCP entries appear automatically, disabled entries remain visible, and removed entries disappear. A search or the Running/Disabled filter can hide entries; choose **All** and clear Search to see them. **Pause** suspends automatic refresh. Project-level overrides and plugin-managed entries outside that config are not comprehensively discovered. No automatic configuration change or process termination runs in the background.
 
 The English interface uses blue `#008AC9` with purple `#8064A2` accents. It opens in read-only monitoring mode: configuration edits and process termination require your explicit interaction.
 
@@ -69,7 +77,7 @@ Requires .NET 10 SDK on Windows for building, not for running the portable packa
 dotnet run --project tests/ResourceDesk.Tests -c Release
 dotnet run --project tests/ResourceDesk.Tests -c Release -- --sample
 dotnet build src/ResourceDesk.App/ResourceDesk.App.csproj -c Release
-dotnet publish src/ResourceDesk.App/ResourceDesk.App.csproj -c Release -r win-x64 --self-contained true -o artifacts/ResourceDesk-0.1.1-win-x64
+dotnet publish src/ResourceDesk.App/ResourceDesk.App.csproj -c Release -r win-x64 --self-contained true -o artifacts/ResourceDesk-0.1.2-win-x64
 ```
 
 The fixture suite covers TOML round trips, comments and quoted keys, protected entries, stale versions, backup tampering, process ancestry, PID reuse, ambiguous attribution and stop authorization. `--sample` reads the live machine without modifying integrations. App options: `--demo` for clearly labelled simulated read-only data; `--config <path>` to choose a config; `--screenshot <png>` to render the app's own window and exit without mutations.

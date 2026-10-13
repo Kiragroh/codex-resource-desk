@@ -29,6 +29,21 @@ public partial class MainWindow : Window
     private int _configGeneration;
     private readonly bool _demo;
     private readonly string? _screenshot;
+    public event Action? MonitoringChanged;
+    public bool IsMonitoringPaused => _paused;
+    public bool IsActionBusy => _busy;
+    public int CompletedSamples { get; private set; }
+    public bool HasIntegration(string key, bool? enabled = null) => _rows.Values.Any(r => r.Key == key && (enabled == null || r.Data.Enabled == enabled));
+    public string MonitoringSummary => !_fresh ? "Resource Desk · stale / waiting for data" :
+        $"Resource Desk · {(_paused ? "paused" : "live")} · {_vm.CodexRam} · {_vm.ProcessCount} processes";
+    public Task RefreshMonitoringAsync() => RefreshAsync();
+    public async Task ToggleMonitoringAsync()
+    {
+        _paused = !_paused; PauseButton.Content = _paused ? "Resume" : "Pause";
+        LiveLabel.Text = !_fresh ? "! STALE / ERROR" : _paused ? "Ⅱ PAUSED" : _demo ? "● DEMO DATA" : "● LIVE · 5s";
+        MonitoringChanged?.Invoke();
+        if (!_paused) await RefreshAsync();
+    }
 
     public MainWindow(string[] args)
     {
@@ -95,6 +110,7 @@ public partial class MainWindow : Window
             if (_closed || generation != _configGeneration) return;
             _config = result.Item1; _snapshot = result.Item2;
             _fresh = true;
+            CompletedSamples++;
             ApplySnapshot();
             var warnings = _config.Warnings.Concat(_snapshot.Raw.Warnings).ToArray();
             if (warnings.Length > 0) Notice(string.Join("  ", warnings.Take(3)));
@@ -108,7 +124,7 @@ public partial class MainWindow : Window
             foreach (var row in _rows.Values) row.Update(row.Data, _snapshot?.CodexRamBytes ?? 0, true);
             _vm.Changed(); Notice(SafeError(ex), true);
         }
-        finally { _gate.Release(); }
+        finally { _gate.Release(); MonitoringChanged?.Invoke(); }
     }
     private static string SafeError(Exception ex) => ex switch
     {
@@ -194,7 +210,7 @@ public partial class MainWindow : Window
         foreach (var button in new[] { AllFilter, RunningFilter, DisabledFilter }) button.Background = Display.Brush((string)button.Tag == _filter ? "#315779" : "#202C39");
     }
     private void Filter_Click(object sender, RoutedEventArgs e) { _filter = (string)((Button)sender).Tag; UpdateFilter(); UpdateFilterButtons(); }
-    private async void Pause_Click(object sender, RoutedEventArgs e) { _paused = !_paused; PauseButton.Content = _paused ? "Resume" : "Pause"; LiveLabel.Text = !_fresh ? "! STALE / ERROR" : _paused ? "Ⅱ PAUSED" : _demo ? "● DEMO DATA" : "● LIVE · 5s"; if (!_paused) await RefreshAsync(); }
+    private async void Pause_Click(object sender, RoutedEventArgs e) => await ToggleMonitoringAsync();
     private async void Refresh_Click(object sender, RoutedEventArgs e) => await RefreshAsync();
     private async void Toggle_Click(object sender, RoutedEventArgs e)
     {
@@ -266,7 +282,7 @@ public partial class MainWindow : Window
         if (dialog.ShowDialog(this) != true) return;
         try
         {
-            var data = new { app = "Resource Desk", version = "0.1.1", demo = _demo, capturedUtc = _snapshot.Raw.CapturedUtc, memory = _snapshot.Raw.Memory, codexPrivateResidentBytes = _snapshot.CodexRamBytes, codexCommittedBytes = _snapshot.CodexCommitBytes, processes = _snapshot.CodexProcesses.Count, components = _snapshot.Components.Select(c => new { name = c.Name, enabled = c.Enabled, processes = c.Count, privateResidentBytes = c.RamBytes, committedBytes = c.CommitBytes }), note = "Contains integration names and aggregate metrics only. No credentials, command lines, executable paths, hostnames or document titles." };
+            var data = new { app = "Resource Desk", version = "0.1.2", demo = _demo, capturedUtc = _snapshot.Raw.CapturedUtc, memory = _snapshot.Raw.Memory, codexPrivateResidentBytes = _snapshot.CodexRamBytes, codexCommittedBytes = _snapshot.CodexCommitBytes, processes = _snapshot.CodexProcesses.Count, components = _snapshot.Components.Select(c => new { name = c.Name, enabled = c.Enabled, processes = c.Count, privateResidentBytes = c.RamBytes, committedBytes = c.CommitBytes }), note = "Contains integration names and aggregate metrics only. No credentials, command lines, executable paths, hostnames or document titles." };
             File.WriteAllText(dialog.FileName, JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true })); Notice("Snapshot saved. Review integration names before sharing publicly.");
         }
         catch (Exception ex) { Notice(SafeError(ex), true); }

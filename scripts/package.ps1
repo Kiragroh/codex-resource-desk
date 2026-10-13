@@ -1,4 +1,4 @@
-param([string]$OutputDirectory = 'artifacts/ResourceDesk-0.1.1-win-x64')
+param([string]$OutputDirectory = 'artifacts/ResourceDesk-0.1.2-win-x64')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Push-Location $root

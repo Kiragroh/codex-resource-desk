@@ -1,5 +1,9 @@
 # Preview verification — 13 October 2026
 
+## 0.1.2 tray update
+
+30 safety fixture groups, seven native UI checks and nine lifecycle/discovery checks passed on the self-contained build. Lifecycle checks closed the window to the tray, observed new/disabled/removed entries from an app-created disposable TOML file using the real five-second timer, verified pause/resume and reopening, then exited and checked icon disposal. No live integration configuration was changed. All copied network release payloads are SHA-256 verified before activation. No Windows startup entry is created.
+
 ## 0.1.1 logo update
 
 GPT Image logo embedded in UI, window and executable; seven ICO resolutions exported. Extracted executable icon and native demo screenshot visually checked. Release build and the same 30 fixture groups plus seven UI checks passed again. All 412 ZIP payload files verified against their SHA-256 manifest. Integration controls are unchanged.
