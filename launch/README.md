@@ -2,7 +2,7 @@
 
 The post is a draft; it has not been published to LinkedIn.
 
-Upload the images in this order, then paste `linkedin-post-de.md`:
+Upload the images in this order, then paste `linkedin-post-en.md`. The earlier German draft is retained in `linkedin-post-de.md` for reference.
 
 1. **01-gptimage-cover.png** — GPT Image title graphic. Alt text: “Resource Desk: Know what Codex is running. Blue and purple bars and a control switch on a dark background. A portable, open-source Windows tool for RAM, process counts and local MCP controls. Early preview; independent of OpenAI.”
 2. **02-app-screenshot.png** — unchanged native application capture, 13 October 2026, 15:12 Europe/Berlin. Alt text: “Resource Desk shows 23.1 GiB used of 63.7 GiB system RAM, 4.4 GiB private Codex RAM and 217 attributed processes. Hostinger and Unity are disabled with zero local processes. The sidebar explains that configuration and runtime are independent.”
