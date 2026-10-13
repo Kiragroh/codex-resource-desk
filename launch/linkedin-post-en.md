@@ -1,14 +1,18 @@
-Why are so many Node processes running when I’m not even using those tools?
+“Why is ChatGPT/Codex suddenly using so much RAM? I’m not even doing anything right now.”
 
-That question led me to build Resource Desk with Codex: a small, portable Windows app for understanding and managing the resources used by Codex and its local MCP integrations.
+That was my starting point. When I investigated, one provider’s official MCP integration alone accounted for over 14 GiB of committed memory across its running instances. I wasn’t actively using that integration. The measurement includes memory that can be paged out; it isn’t a physical-RAM benchmark.
 
-It shows system memory, private RAM attributed to Codex, and process counts per integration. Click the memory breakdown to inspect the details. You can disable supported local MCP integrations and selectively stop their verified processes. Disabled entries stay visible so you can enable them again later.
+So I built a tool to see what was happening and take control—with ChatGPT/Codex itself.
 
-One useful lesson from building it: “enabled = false” does not mean existing processes have stopped. Resource Desk shows configuration and running processes separately for exactly that reason.
+The result is Resource Desk: a small, portable Windows companion that shows system RAM, memory attributed to Codex, and process counts per integration. You can inspect the breakdown, disable supported local MCP integrations, stop their verified processes, and enable them again when needed.
 
-The first version is now open source on GitHub: native Windows UI, portable ZIP, no telemetry. It’s an early preview focused on local MCP servers in the global Codex configuration. Shared Codex helpers are protected, and existing sessions may need a Codex restart to pick up new settings.
+One detail matters: “enabled = false” does not mean existing processes have stopped. Configuration and running processes need separate visibility.
 
-If you use Codex on Windows, which integration would you inspect first?
+The idea is in the same spirit as Claude Mods: making your AI tools fit the way you work. Resource Desk takes a simpler, external approach, working with local processes and configuration rather than extending the app from within. I’d love to have this kind of resource control directly in ChatGPT/Codex. For now, this is my first practical way to help myself—and perhaps others.
+
+It’s now open source: native Windows UI, portable ZIP, no telemetry. An early preview for local MCP servers in the global Codex configuration. Shared helpers stay protected; existing sessions may need a Codex restart to apply changes.
+
+Have you noticed integrations consuming resources while you weren’t using them?
 
 https://github.com/Kiragroh/codex-resource-desk
 
